@@ -11,32 +11,46 @@
 
     <div id="app">
 
-        <h4>Events</h4>
+
+        <h4>User Information</h4>
+        <form>
+            <label for="genders">Gender:</label>
+            <select id="genders" name="genders">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select><br><br>
+
+            <label for="weight">Weight (in kg):</label>
+            <input type="number" id="weight" name="weight" min="1" max="300"><br><br>
+
+            <label for="age">Age (in years):</label>
+            <input type="number" id="age" name="age" min="1" max="150"><br><br>
+        </form> 
+        <button v-on:click="getUserInformation">Submit</button>
+
+        <h5>Current User</h5>
+        <p>Gender: {{ gender }}</p>
+        <p>Weight (in kg): {{ weight }}</p>
+        <p>Age (in years): {{ age }}</p>
+
+
+        <hr>
+        <h4>Training</h4>
         <!-- Sync example -->
-        <p>Buttons pressed within 1 second: {{ buttonsSync }}</p>
+        <p>Training status: {{ trainingStatus }}</p>
 
         <!-- Counter example (received as event) -->
-        <p>Button press counter: {{ buttonPressCounter }}</p>
+        <p>Pushup counter: {{ pushUpCounter }}</p>
 
         <!-- Blinking example (received as event) -->
-        <p>Device 0 is blinking: {{ blinking_0 }}</p>
-        <p>Device 1 is blinking: {{ blinking_1 }}</p>
+        <p>Burned calories in the last training session: {{ burnedCalories }}</p>
+        <button v-on:click="getBurnedCalories(0)">Get burned Calories</button>
         
         <hr>
-        <h4>Variables</h4>
-        <!-- Read variables example -->
-        <p>Button state (0): {{ buttonState_0 }} </p>
-        <button v-on:click="getButtonState(0)">Get button state (Device 0)</button>
-        <br>
-        <p>Button state (1): {{ buttonState_1 }} </p>
-        <button v-on:click="getButtonState(1)">Get button state (Device 1)</button>
-        
-        <hr>
-        <h4>Functions</h4>
+        <h4>Functions (for demo purposes only!)</h4>
         <!-- Call functions example  -->
-        <p>Blink red</p>
-        <button v-on:click="blinkRed(0)">Blink Red (Device 0)</button>
-        <button v-on:click="blinkRed(1)">Blink Red (Device 1)</button>
+        <p>Remote pushup</p>
+        <button v-on:click="remotePushup(0)">Do a Pushup</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

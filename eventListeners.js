@@ -1,71 +1,49 @@
-// remember the last event so that we can check if two buttons were pressed within 1 second
-var lastButtonPressEvent = {
-    deviceId: "",
-    timestamp: 0
+var pushupCounter = 0;
+
+function handlePushupDone (event) {
+
+    let ev = JSON.parse(event.data);
+    let evData = ev.data; 
+    let evDeviceId = ev.coreid;
+    let evTimestamp = Date.parse(ev.published_at);
+
+    pushupCounter++;
+
+    let data = {
+        message: evData,
+        counter: pushupCounter,
+    }
+
+    sendData("pushupDone", data, evDeviceId, evTimestamp );
 }
 
-// remember how many times the buttons were pressed
-var buttonPressCounter = 0;
-
-// react on the "blinkingStateChanged" Event
-function handleBlinkingStateChanged (event) {
-    // read variables from the event
+function handleTrainingStarted (event) {
     let ev = JSON.parse(event.data);
-    let evData = ev.data; // the data from the argon event: "started blinking" or "stopped blinking"
-    let evDeviceId = ev.coreid; // the device id
-    let evTimestamp = Date.parse(ev.published_at); // the timestamp of the event
+    let evData = ev.data; 
+    let evDeviceId = ev.coreid;
+    let evTimestamp = Date.parse(ev.published_at); 
 
-    // the data we want to send to the clients
     let data = {
-        message: evData, // just forward "started blinking" or "stopped blinking"
+        message: evData,
+        evTimestamp,
     }
 
-    // send data to all connected clients
-    sendData("blinkingStateChanged", data, evDeviceId, evTimestamp );
+    sendData("trainingStarted", data, evDeviceId, evTimestamp);
 }
 
-// react on the "buttonStateChanged" Event
-function handleButtonStateChanged (event) {
-    // read variables from the event
+function handleTrainingEnded (event) {
     let ev = JSON.parse(event.data);
-    let evData = ev.data; // the data from the argon event: "pressed" or "released"
-    let evDeviceId = ev.coreid; // the device id
-    let evTimestamp = Date.parse(ev.published_at); // the timestamp of the event
+    let evData = ev.data; 
+    let evDeviceId = ev.coreid;
+    let evTimestamp = Date.parse(ev.published_at);
+    pushupCounter = 0;
 
-    // helper variables that we need to build the message to be sent to the clients
-    let sync = false;
-    let msg = "";
-
-    if (evData === "pressed") {
-        buttonPressCounter++; // increase the buttonPressCounter by 1
-        msg = "pressed";
-
-        // check if the last two button press events were whithin 1 second
-        if (evTimestamp - lastButtonPressEvent.timestamp < 1000) {
-            if (evDeviceId !== lastButtonPressEvent.deviceId) {
-                sync = true;
-            }
-        }
-
-        lastButtonPressEvent.timestamp = evTimestamp;
-        lastButtonPressEvent.deviceId = evDeviceId;
-    } 
-    else if (evData === "released") {
-        msg = "released";
-    }
-    else {
-        msg = "unknown state";
-    }
-
-    // the data we want to send to the clients
     let data = {
-        message: msg,
-        counter: buttonPressCounter,
-        pressedSync: sync
+        message: evData,
+        evTimestamp,
     }
 
-    // send data to all connected clients
-    sendData("buttonStateChanged", data, evDeviceId, evTimestamp );
+    sendData("trainingEnded", data, evDeviceId, evTimestamp );
 }
 
 // send data to the clients.
@@ -91,5 +69,6 @@ exports.deviceIds = [];
 exports.sse = null;
 
 // export your own functions here as well
-exports.handleBlinkingStateChanged = handleBlinkingStateChanged;
-exports.handleButtonStateChanged = handleButtonStateChanged;
+exports.handlePushupDone = handlePushupDone;
+exports.handleTrainingStarted = handleTrainingStarted;
+exports.handleTrainingEnded = handleTrainingEnded;
